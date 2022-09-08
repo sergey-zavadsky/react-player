@@ -32,15 +32,12 @@ const Player = ({
 		}
 	};
 
-	useEffect(() => {}, [currentSong, nextSong, prevSong]);
-
 	const playNext = () => {
 		songs.forEach((song, index) => {
 			if (song.name === currentSong.name) {
 				if (songs.length > index) {
 					setNextSong(songs[index++]);
 					setCurrentSong(songs[index]);
-					setPrevSong(songs[index]);
 				}
 			}
 			if (index === songs.length) {
@@ -56,7 +53,6 @@ const Player = ({
 				if (index > 0) {
 					setNextSong(songs[index--]);
 					setCurrentSong(songs[index]);
-					setPrevSong(songs[0]);
 				}
 			}
 
