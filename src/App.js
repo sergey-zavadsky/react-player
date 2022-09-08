@@ -1,6 +1,6 @@
 // * Adding Components
 import './styles/app.scss';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Player from './components/Player';
 import Song from './components/Song';
 import Library from './components/Library';
@@ -11,7 +11,7 @@ function App() {
 	// * State
 	const [songs, setSongs] = useState(data());
 	const [currentSong, setCurrentSong] = useState(songs[0]);
-	const [stopSong, setStopSong] = useState(false);
+	const [stopSong, setStopSong] = useState(true);
 
 	return (
 		<div className="App">

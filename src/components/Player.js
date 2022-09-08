@@ -7,6 +7,7 @@ import {
 	faAngleRight,
 	faPlay,
 	faPause,
+	faL,
 } from '@fortawesome/free-solid-svg-icons';
 
 const Player = ({
@@ -19,20 +20,26 @@ const Player = ({
 	const [prevSong, setPrevSong] = useState(songs[songs.length - 1]);
 	const [nextSong, setNextSong] = useState(songs[1]);
 
+	useEffect(() => {
+		const run = () => audioRef.current.play();
+		setTimeout(run, 2000);
+	}, [currentSong]);
 	//* Ref
 	const audioRef = useRef(null);
 	//* Music handlr
 	const playSongHandler = () => {
-		if (stopSong) {
+		if (!stopSong) {
 			audioRef.current.pause();
 			setStopSong(!stopSong);
 		} else {
+			setStopSong(false);
 			audioRef.current.play();
 			setStopSong(!stopSong);
 		}
 	};
 
 	const playNext = () => {
+		setStopSong(false);
 		songs.forEach((song, index) => {
 			if (song.name === currentSong.name) {
 				if (songs.length > index) {
@@ -49,6 +56,7 @@ const Player = ({
 
 	const playPrev = () => {
 		songs.forEach((song, index) => {
+			setStopSong(false);
 			if (song.name === currentSong.name) {
 				if (index > 0) {
 					setNextSong(songs[index--]);
@@ -60,6 +68,7 @@ const Player = ({
 				setCurrentSong(songs[songs.length - 1]);
 			}
 		});
+
 		return audioRef.current.play();
 	};
 
@@ -92,11 +101,14 @@ const Player = ({
 		durationTime: 0,
 	});
 	const isPlaying = () => {
-		if (!stopSong) {
+		if (stopSong) {
 			return faPlay;
 		}
-		return faPause;
+		if (!stopSong) {
+			return faPause;
+		}
 	};
+
 	return (
 		<div className="player">
 			<div className="time-control">
