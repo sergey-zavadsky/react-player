@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 // * Importing compoment from fontAwesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 //* Importing icons for fontAwesonme component
@@ -7,7 +7,6 @@ import {
 	faAngleRight,
 	faPlay,
 	faPause,
-	faL,
 } from '@fortawesome/free-solid-svg-icons';
 
 const Player = ({
@@ -16,36 +15,25 @@ const Player = ({
 	setStopSong,
 	setCurrentSong,
 	songs,
+	audioRef,
 }) => {
-	const [prevSong, setPrevSong] = useState(songs[songs.length - 1]);
-	const [nextSong, setNextSong] = useState(songs[1]);
-
-	useEffect(() => {
-		const run = () => audioRef.current.play();
-		setTimeout(run, 2000);
-	}, [currentSong]);
-	//* Ref
-	const audioRef = useRef(null);
-	//* Music handlr
+	//* Music handler
 	const playSongHandler = () => {
 		if (!stopSong) {
 			audioRef.current.pause();
-			setStopSong(!stopSong);
-		} else {
-			setStopSong(false);
+			setStopSong(true);
+		}
+		if (stopSong) {
 			audioRef.current.play();
-			setStopSong(!stopSong);
+			setStopSong(false);
 		}
 	};
 
 	const playNext = () => {
-		setStopSong(false);
 		songs.forEach((song, index) => {
-			if (song.name === currentSong.name) {
-				if (songs.length > index) {
-					setNextSong(songs[index++]);
-					setCurrentSong(songs[index]);
-				}
+			if (song.name === currentSong.name && songs.length > index) {
+				index++;
+				setCurrentSong(songs[index]);
 			}
 			if (index === songs.length) {
 				setCurrentSong(songs[0]);
@@ -56,19 +44,14 @@ const Player = ({
 
 	const playPrev = () => {
 		songs.forEach((song, index) => {
-			setStopSong(false);
-			if (song.name === currentSong.name) {
-				if (index > 0) {
-					setNextSong(songs[index--]);
-					setCurrentSong(songs[index]);
-				}
+			if (song.name === currentSong.name && index > 0) {
+				index--;
+				setCurrentSong(songs[index]);
 			}
-
 			if (index === 0) {
 				setCurrentSong(songs[songs.length - 1]);
 			}
 		});
-
 		return audioRef.current.play();
 	};
 
@@ -100,10 +83,16 @@ const Player = ({
 		currentTime: 0,
 		durationTime: 0,
 	});
+
 	const isPlaying = () => {
-		if (stopSong) {
+		if (
+			(songInfo.durationTime > 0 &&
+				songInfo.durationTime === songInfo.currentTime) ||
+			stopSong
+		) {
 			return faPlay;
 		}
+
 		if (!stopSong) {
 			return faPause;
 		}
@@ -115,7 +104,7 @@ const Player = ({
 				<p>{getTime(songInfo.currentTime)}</p>
 				<input
 					min={0}
-					max={songInfo.duration}
+					max={songInfo.durationTime}
 					value={songInfo.currentTime}
 					type="range"
 					onChange={dragHandler}
