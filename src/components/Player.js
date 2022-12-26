@@ -10,6 +10,7 @@ import {
 	faVolumeUp,
 	faVolumeDown,
 	faVolumeXmark,
+	faL,
 } from '@fortawesome/free-solid-svg-icons';
 
 const Player = ({
@@ -21,7 +22,7 @@ const Player = ({
 	audioRef,
 }) => {
 	//* Music handler
-	const playSongHandler = () => {
+	const playSongHandler = (e) => {
 		if (!stopSong) {
 			audioRef.current.pause();
 			setStopSong(true);
@@ -29,18 +30,31 @@ const Player = ({
 		if (stopSong) {
 			audioRef.current.play();
 			setStopSong(false);
+			audioRef.current.volume = volume / 100;
 		}
 	};
 
 	//* Volume handler
 
-	const [volume, setSongVolume] = useState(20);
+	const [volume, setSongVolume] = useState(0);
+	const [previousVolume, setPrevious] = useState(0);
 
 	const volumeHandler = (e) => {
-		console.log(e);
 		setSongVolume(() => e.target.value);
 		return (audioRef.current.volume = volume / 100);
 	};
+
+	const isOnClick = (e) => {
+		setPrevious(volume);
+		if (volume > 0) {
+			setSongVolume(0);
+			return (audioRef.current.volume = previousVolume / 100);
+		}
+		setSongVolume(previousVolume);
+		return (audioRef.current.volume = previousVolume / 100);
+	};
+
+	useEffect(() => {}, [volume]);
 
 	const isVolume = () => {
 		if (volume <= 0) {
@@ -162,7 +176,12 @@ const Player = ({
 					icon={faAngleRight}
 					onClick={playNext}
 				/>
-				<FontAwesomeIcon className="volume" size="sm" icon={isVolume()} />
+				<FontAwesomeIcon
+					className="volume"
+					size="sm"
+					icon={isVolume()}
+					onClick={isOnClick}
+				/>
 				<input
 					min={0}
 					max={100}
