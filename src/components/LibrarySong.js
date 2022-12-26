@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const LibrarySong = ({ song, songs, setCurrentSong, id, active }) => {
+const LibrarySong = ({ song, setCurrentSong }) => {
+	const lsa = 'Library-songs-active';
+	const ls = 'Library-songs';
+
+	//const [isActive, setIsActive] = useState(false);
+
 	const songSelectHandler = () => {
 		setCurrentSong(song);
 	};
 
 	return (
-		<div onClick={songSelectHandler} className={`Library-songs`}>
+		<div onClick={songSelectHandler} className={ls}>
 			<img src={song.cover} alt={song.artist} />
 			<div className="song-description">
 				<h3>{song.name}</h3>

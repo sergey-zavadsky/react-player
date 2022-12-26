@@ -25,6 +25,20 @@
 	}
 }
 
+.Library-songs-active {
+	display: flex;
+	align-items: center;
+	padding: 1rem 2rem 1rem 2rem;
+	cursor: pointer;
+	img {
+		width: 30%;
+	}
+	&:hover {
+		background: lightblue;
+	}
+	background: lightblue;
+}
+
 .song-description {
 	padding-left: 1rem;
 	h3 {

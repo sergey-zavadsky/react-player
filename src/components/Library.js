@@ -1,13 +1,8 @@
 import LibrarySong from './LibrarySong';
-import { Rotate as Hamburger } from 'hamburger-react';
-import { useState } from 'react';
 
 const Library = ({ songs, setCurrentSong }) => {
-	const [isOpen, setOpen] = useState(false);
 	return (
 		<div className="Library">
-			<Hamburger toggled={isOpen} toggle={setOpen} />
-
 			<h2>Library</h2>
 			<div className="library-songs">
 				{songs.map((song) => (
@@ -17,6 +12,7 @@ const Library = ({ songs, setCurrentSong }) => {
 						setCurrentSong={setCurrentSong}
 						id={song.id}
 						key={song.id}
+						isPlaying={false}
 					/>
 				))}
 			</div>

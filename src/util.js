@@ -1,6 +1,17 @@
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid';
+
 function chillHop() {
 	return [
+		{
+			name: 'Lookaway',
+			cover:
+				'https://chillhop.com/wp-content/uploads/2022/09/370fcf77d4ba59808c1109403c537e0fcc0b4edd-1024x1024.jpg',
+			artist: 'ØDYSSEE, Blumen',
+			color: ['#B78603', '#BA2F4B'],
+			audio: 'https://mp3.chillhop.com/serve.php/?mp3=44900',
+			id: uuidv4(),
+			active: true,
+		},
 		{
 			name: 'Beaver Creek',
 			cover:
@@ -9,7 +20,7 @@ function chillHop() {
 			audio: 'https://mp3.chillhop.com/serve.php/?mp3=10075',
 			color: ['#205950', '#2ab3bf'],
 			id: uuidv4(),
-			active: true,
+			active: false,
 		},
 		{
 			name: 'Daylight',
@@ -62,7 +73,7 @@ function chillHop() {
 			active: false,
 		},
 		//ADD MORE HERE
-	]
+	];
 }
 
-export default chillHop
+export default chillHop;

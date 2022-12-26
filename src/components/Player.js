@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 // * Importing compoment from fontAwesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 //* Importing icons for fontAwesonme component
@@ -7,6 +7,9 @@ import {
 	faAngleRight,
 	faPlay,
 	faPause,
+	faVolumeUp,
+	faVolumeDown,
+	faVolumeXmark,
 	faL,
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -16,36 +19,61 @@ const Player = ({
 	setStopSong,
 	setCurrentSong,
 	songs,
+	audioRef,
 }) => {
-	const [prevSong, setPrevSong] = useState(songs[songs.length - 1]);
-	const [nextSong, setNextSong] = useState(songs[1]);
-
-	useEffect(() => {
-		const run = () => audioRef.current.play();
-		setTimeout(run, 2000);
-	}, [currentSong]);
-	//* Ref
-	const audioRef = useRef(null);
-	//* Music handlr
-	const playSongHandler = () => {
+	//* Music handler
+	const playSongHandler = (e) => {
 		if (!stopSong) {
 			audioRef.current.pause();
-			setStopSong(!stopSong);
-		} else {
-			setStopSong(false);
+			setStopSong(true);
+		}
+		if (stopSong) {
 			audioRef.current.play();
-			setStopSong(!stopSong);
+			setStopSong(false);
+			audioRef.current.volume = volume / 100;
 		}
 	};
 
+	//* Volume handler
+
+	const [volume, setSongVolume] = useState(0);
+	const [previousVolume, setPrevious] = useState(0);
+
+	const volumeHandler = (e) => {
+		setSongVolume(() => e.target.value);
+		return (audioRef.current.volume = volume / 100);
+	};
+
+	const isOnClick = (e) => {
+		setPrevious(volume);
+		if (volume > 0) {
+			setSongVolume(0);
+			return (audioRef.current.volume = previousVolume / 100);
+		}
+		setSongVolume(previousVolume);
+		return (audioRef.current.volume = previousVolume / 100);
+	};
+
+	useEffect(() => {}, [volume]);
+
+	const isVolume = () => {
+		if (volume <= 0) {
+			return faVolumeXmark;
+		}
+		if (volume > 0 && volume < 50) {
+			return faVolumeDown;
+		}
+		if (volume > 49) {
+			return faVolumeUp;
+		}
+		return faVolumeXmark;
+	};
+
 	const playNext = () => {
-		setStopSong(false);
 		songs.forEach((song, index) => {
-			if (song.name === currentSong.name) {
-				if (songs.length > index) {
-					setNextSong(songs[index++]);
-					setCurrentSong(songs[index]);
-				}
+			if (song.name === currentSong.name && songs.length > index) {
+				index++;
+				setCurrentSong(songs[index]);
 			}
 			if (index === songs.length) {
 				setCurrentSong(songs[0]);
@@ -56,19 +84,14 @@ const Player = ({
 
 	const playPrev = () => {
 		songs.forEach((song, index) => {
-			setStopSong(false);
-			if (song.name === currentSong.name) {
-				if (index > 0) {
-					setNextSong(songs[index--]);
-					setCurrentSong(songs[index]);
-				}
+			if (song.name === currentSong.name && index > 0) {
+				index--;
+				setCurrentSong(songs[index]);
 			}
-
 			if (index === 0) {
 				setCurrentSong(songs[songs.length - 1]);
 			}
 		});
-
 		return audioRef.current.play();
 	};
 
@@ -91,22 +114,30 @@ const Player = ({
 	};
 
 	const getTime = (time) => {
-		return (
-			Math.floor(time / 60) + ':' + ('0' + Math.floor(time % 60)).slice(-2)
-		);
+		let format =
+			Math.floor(time / 60) + ':' + ('0' + Math.floor(time % 60)).slice(-2);
+
+		if (isNaN(time)) {
+			format = '00:00';
+		}
+		return format;
 	};
 	//* State of songInfo
 	const [songInfo, setSongInfo] = useState({
 		currentTime: 0,
 		durationTime: 0,
 	});
+
 	const isPlaying = () => {
+		let final;
 		if (stopSong) {
-			return faPlay;
+			final = faPlay;
 		}
+
 		if (!stopSong) {
-			return faPause;
+			final = faPause;
 		}
+		return final;
 	};
 
 	return (
@@ -115,12 +146,16 @@ const Player = ({
 				<p>{getTime(songInfo.currentTime)}</p>
 				<input
 					min={0}
-					max={songInfo.duration}
+					max={songInfo?.durationTime || 100}
 					value={songInfo.currentTime}
 					type="range"
 					onChange={dragHandler}
 				/>
-				<p>{getTime(songInfo.durationTime)}</p>
+				<p>
+					{!isNaN(songInfo.durationTime)
+						? getTime(songInfo.durationTime)
+						: '0:00'}
+				</p>
 			</div>
 			<div className="play-control">
 				<FontAwesomeIcon
@@ -141,7 +176,21 @@ const Player = ({
 					icon={faAngleRight}
 					onClick={playNext}
 				/>
+				<FontAwesomeIcon
+					className="volume"
+					size="sm"
+					icon={isVolume()}
+					onClick={isOnClick}
+				/>
+				<input
+					min={0}
+					max={100}
+					value={volume}
+					type="range"
+					onChange={(e) => volumeHandler(e)}
+				/>
 			</div>
+
 			<audio
 				onTimeUpdate={timeUpdateHandler}
 				ref={audioRef}
